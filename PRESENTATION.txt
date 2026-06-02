@@ -1,0 +1,302 @@
+================================================================================
+        STAFFINC FINANCE AUTOMATION — PRESENTATION GUIDE
+        For: Finance Team / Internal Stakeholders
+================================================================================
+
+
+================================================================================
+  PART 1 — COVENANT TRACKER
+================================================================================
+
+
+THE PROBLEM WE WERE SOLVING
+-----------------------------
+Staffinc has 14 active financing agreements across banks, P2P lenders, and
+offshore financiers. Each agreement comes with its own set of:
+
+  - Reports we must submit (monthly, quarterly, annually)
+  - Financial ratios we must maintain (debt/equity, current ratio, cash runway)
+  - Restrictions on what we can and can't do
+  - Contract expiry dates with renewal deadlines
+
+Previously, tracking all of this lived in manual spreadsheets and individual
+team members' calendars. If someone was on leave or left the team, that
+knowledge walked out with them. There was no single source of truth, and no
+proactive warning system — we had to go looking to know if something was due.
+
+
+WHAT WE BUILT
+--------------
+A web application that:
+
+  1. Reads all our financing agreements (from Google Drive or uploaded PDFs)
+  2. Automatically extracts every obligation, covenant, and deadline
+  3. Displays everything in one dashboard — across all 14 financiers at once
+  4. Sends alerts to the team automatically — before deadlines, not after
+
+
+WHAT'S LIVE TODAY (May 2026)
+-----------------------------
+  ✓ 14 financiers, 14 agreements fully loaded
+  ✓ 52 covenants tracked with thresholds (financial + non-financial)
+  ✓ 29 reporting obligations, 12 with active countdown timers
+  ✓ Alert engine running every 6 hours — fires warnings 60, 30, 14, 7 days out
+  ✓ Google login — @staffinc.co accounts only, no separate passwords
+  ✓ Immediate alerts surfaced today:
+      · Audited Consolidated Annual FS due to JR Kelmscott in 30 days (Jun 29)
+      · 5 agreements with expired end dates — need renewal attention
+
+
+THE FOUR THINGS IT TRACKS
+--------------------------
+
+  1. REPORTING OBLIGATIONS
+     What:   Every report we owe to each financier
+     Where:  Obligations page → Reporting tab
+     How:    Shows frequency, next due date, days remaining
+     Alert:  Warns at 60 days, 30 days, 14 days, 7 days, and on the day
+
+  2. COVENANT MONITORING
+     What:   Financial conditions we must maintain (ratios, thresholds)
+     Where:  Covenants page → Financial filter
+     How:    Enter current value → system calculates Compliant / At Risk / Breached
+             "At Risk" = within 10% of the threshold boundary
+     Alert:  Fires immediately when status changes to At Risk or Breached
+
+  3. OTHER OBLIGATIONS
+     What:   Restrictions, approval requirements, notifications we must send
+             (e.g. "notify Canopus before any encumbrance", "no change in control")
+     Where:  Obligations page → Other tab
+     How:    Imported from agreements — listed by category and priority
+     Status: Tracked as pending / ongoing / completed
+
+  4. RENEWAL REMINDERS
+     What:   Agreement expiry dates with escalating urgency
+     Where:  Renewals page + Dashboard
+     How:    Colour-coded by urgency: green (>90d), amber (30–90d), red (<30d)
+     Alert:  Monthly reminder at 90 days, bi-weekly at 60, weekly at 30,
+             daily at 7, critical on expiry
+
+
+HOW OBLIGATIONS GET INTO THE SYSTEM
+-------------------------------------
+Two methods — both live:
+
+  A. AI PDF Extraction (for new agreements going forward)
+     - Upload any financing agreement PDF via the Upload page
+     - AI reads it and extracts all obligations, covenants, dates, and parties
+     - Review the extraction result, approve, and it's live in the dashboard
+     - No manual data entry required
+
+  B. Google Sheets Sync (used for initial load)
+     - Reads directly from the existing "General Information" and
+       "List of Covenants" sheets in Google Drive
+     - Maps each row to the correct financier and agreement automatically
+     - Re-runnable if the sheet is updated
+
+
+WHAT THE FINANCE TEAM NEEDS TO DO
+-----------------------------------
+Day-to-day (very little):
+
+  - Check the dashboard when you log in — alerts surface automatically
+  - When a report is submitted: click "Mark as submitted" on the obligation
+  - When covenant values are available from monthly accounts: enter them
+    on the Covenants page (one field per covenant, auto-calculates compliance)
+  - When a new agreement is signed: upload the PDF — AI does the rest
+
+One-time setup still needed:
+
+  - Settings page → add SMTP credentials so email alerts go out automatically
+  - Settings page → add all team members as alert recipients
+  - Covenants page → enter current values for the 8 financial ratios
+    (needs latest balance sheet: D/E ratio, current ratio, cash runway, etc.)
+
+
+WHAT GOOD LOOKS LIKE IN 3 MONTHS
+-----------------------------------
+  - Zero missed reporting deadlines — team gets email warning 30 days out
+  - Covenant status always visible — no manual checking required
+  - New agreements live in the system within 1 hour of signing
+  - Any team member can see full obligation status for any financier in < 30 sec
+  - Alert email lands in inbox before any deadline — not after
+
+
+DEMO FLOW (if showing live)
+----------------------------
+  1. Dashboard   → show the health bar, 13 alerts, upcoming reports panel
+  2. Alerts page → show the Consolidated FS warning (30 days), expired agreements
+  3. Covenants   → filter to Financial, show threshold cards, click Enter Value
+  4. Obligations → Reporting tab, show countdown timers and submission tracking
+  5. Renewals    → show the 5 expired agreements, explain the escalation logic
+  6. Upload      → show the PDF upload flow (can demo with any agreement PDF)
+  7. Settings    → show where to add email recipients for automated alerts
+
+
+KEY NUMBERS TO QUOTE
+---------------------
+  14   financiers tracked in one place
+  52   covenants monitored
+  29   reporting obligations with automated reminders
+   6   hours between automatic alert checks
+   1   place for the whole team to see everything
+   0   spreadsheets maintained manually
+
+
+================================================================================
+  PART 2 — BANK STATEMENT DISTRIBUTION AUTOMATION
+================================================================================
+
+
+THE PROBLEM WE WERE SOLVING
+-----------------------------
+During due diligence, financiers request bank statements as direct email
+attachments — they cannot access Google Drive or external links due to IT
+restrictions. The previous process looked like this every single month:
+
+  Step 1 (30–60 min)  Download statements one by one from each bank folder
+  Step 2 (30–60 min)  Regroup files by entity (Drive is organised by bank,
+                      but financiers request by entity)
+  Step 3 (30–60 min)  Compress and manually split files to stay under the
+                      25 MB email attachment limit
+  Step 4 (30–60 min)  Send multiple emails to each financier
+
+  Total: 2–4 hours of manual work, repeated every month.
+
+
+WHAT WE BUILT
+--------------
+An automated workflow that runs with a single command (or fully automatically
+on the 1st of every month):
+
+  1. Pulls the latest bank statements directly from Google Drive
+  2. Regroups files by entity automatically (Drive is bank → files;
+     the system flips this to entity → files across all banks)
+  3. Compresses everything into one zip per financier at maximum compression
+  4. Splits automatically if the zip exceeds 25 MB (no email ever bounces)
+  5. Sends each financier their statements as direct email attachments
+  6. Logs every run — what was sent, to whom, file sizes, any warnings
+
+
+THE FULL FLOW (start to end)
+------------------------------
+
+  TRIGGER
+  ───────
+  Windows Task Scheduler fires run_monthly.ps1 on the 1st of each month
+  at 7:00 AM — or a team member runs `python run.py send` manually.
+  No human file handling required either way.
+
+  STEP 1 — SCAN DRIVE
+  ────────────────────
+  The system connects to Google Drive using a stored OAuth token (one-time
+  browser login, auto-refreshes forever after). It scans all three source
+  folders simultaneously:
+
+    · Organic Bank Statements  (30 entity sub-folders)
+    · SAPTA Bank Statements
+    · IPM Bank Statements
+
+  It lists every entity folder it finds across all three banks and merges
+  them into a single map: entity → [all files across all banks].
+
+  STEP 2 — SELECT LATEST FILES
+  ─────────────────────────────
+  For each entity, it picks only the latest statement(s). Default behaviour:
+  newest 1 file per bank folder. This means if SMI has statements in both
+  BCA and OCBC, it picks the most recently uploaded file from each.
+
+  Configurable — can also filter by month in the filename (e.g. "May 2026")
+  or by upload date if needed.
+
+  STEP 3 — DOWNLOAD
+  ──────────────────
+  Only the selected files are downloaded to a local temp folder, organised
+  by entity. Files from different banks are prefixed with the bank name to
+  avoid filename collisions (e.g. "Organic Bank Statements — stmt.pdf").
+
+  STEP 4 — COMPRESS INTO ONE ZIP PER FINANCIER
+  ──────────────────────────────────────────────
+  All files needed by a financier (across all their entities) are compressed
+  into a single zip at maximum compression level.
+
+  Zip name format:  FinancierName_2026-05.zip
+
+  If the compressed zip is still over the 25 MB email limit:
+    · It is split into independently-openable parts (not a multi-part archive
+      that locked-down IT can't open — each part is a normal .zip)
+    · Parts are named:  FinancierName_2026-05_part1of3.zip, _part2of3.zip …
+    · Each part goes in its own email
+
+  If a single source file is larger than the limit (e.g. a scanned PDF):
+    · It is flagged in the run log with an OVERSIZED FILE warning
+    · Sent anyway — if it bounces, the bank is asked for a smaller export
+
+  STEP 5 — SEND EMAIL
+  ────────────────────
+  Each financier receives one email (or more if split) with:
+    · Subject:  "Bank Statements — [Entity List] — 2026-05"
+    · Body:     Branded HTML email (StaffInc header, entity highlight box,
+                period, part note if split, sign-off)
+    · Attachments: the zip file(s) as direct attachments — no links
+
+  Sent via Gmail SMTP using an App Password. No Google Cloud billing required.
+
+  STEP 6 — LOG
+  ─────────────
+  Every run appends to runs/YYYY-MM.log:
+    · Which entities were found / skipped
+    · File sizes and zip sizes
+    · Which emails were sent to which address
+    · Any warnings (missing entities, oversized files)
+
+  The log is the audit trail — you can check any past run at any time.
+
+
+HOW TO ADD A NEW FINANCIER
+---------------------------
+Open config.yaml and add one block. That's it. No code changes, ever.
+
+  - name: "New Financier"
+    email: "contact@newfinancier.com"
+    entities: ["SMI", "PBS", "BCA"]
+
+On the next run (or trigger), they're included automatically.
+
+
+WHAT THE FINANCE TEAM NEEDS TO DO
+-----------------------------------
+Day-to-day: nothing. The schedule handles it.
+
+When a new financier is added:
+  1. Add their block to config.yaml (name, email, entities)
+  2. Run `python run.py dry-run` to verify what would be sent
+  3. Done — next scheduled run includes them
+
+When going live for the first time:
+  1. Fill in real financier contacts in config.yaml
+  2. Run dry-run to verify
+  3. Run send for the first real submission
+
+
+DEMO FLOW (if showing live)
+----------------------------
+  1. Show config.yaml → point out how simple a financier entry is
+  2. Run `python run.py discover` → show all 30 entity folders found in Drive
+  3. Run `python run.py dry-run` → show the full flow without sending:
+       · entities downloaded, zip sizes, which email goes to which address
+  4. Show runs/YYYY-MM.log → show what the audit trail looks like after a run
+  5. Show Task Scheduler → confirm the monthly job is registered and ready
+
+
+KEY NUMBERS TO QUOTE
+---------------------
+  3    source folders scanned automatically (Organic, SAPTA, IPM)
+  30   entity folders detected across all banks
+   1   zip per financier per month (split only if needed)
+  25   MB maximum per email — never bounces
+   0   manual steps required each month
+   1   line in config.yaml to add a new financier
+
+
+================================================================================
