@@ -1,0 +1,77 @@
+# =============================================================================
+# Bank Statement Distribution — configuration
+# -----------------------------------------------------------------------------
+# Copy this file to `config.yaml` and edit. `config.yaml` is git-ignored so
+# your financier contacts stay private. Adding a financier = add a list item
+# below. No code changes, ever.
+# =============================================================================
+
+# ----------------------------------------------------------------------------
+# 1. SOURCE FOLDERS  (Google Drive, organised by BANK -> ENTITY -> files)
+#    Paste the folder ID from the share URL:
+#      https://drive.google.com/drive/folders/<THIS_PART_IS_THE_ID>
+#    The script treats each *immediate sub-folder* of a bank folder as an
+#    ENTITY, and collects every statement file underneath it (any depth).
+# ----------------------------------------------------------------------------
+source_folders:
+  - name: "Organic Bank Statements"
+    id: "1wmN7m3maOIYJehKG5nCirnofnD1qFH85"
+  - name: "SAPTA Bank Statements"
+    id: "19HfJZDdysgMvlCTBytXyb_Mnz8ConHIl"
+  - name: "IPM Bank Statements"
+    id: "1jk84Erf_4wJUyOXvecEDp_FLy3za-7SE"
+
+# ----------------------------------------------------------------------------
+# 2. WHICH STATEMENTS TO PULL each run
+#   mode:
+#     latest_per_folder  -> newest `latest_count` file(s) in each entity folder
+#                           (robust default — "the latest statement", regardless
+#                           of when it was uploaded or how it's named)
+#     month              -> every file whose Drive modified-time falls in `period`
+#     filename_period    -> every file whose NAME contains `period` (e.g. 2026-05,
+#                           "May 2026", "May-2026"); good when files are named by
+#                           statement month rather than upload date
+# ----------------------------------------------------------------------------
+selection:
+  mode: "latest_per_folder"
+  latest_count: 1
+  # Used by `month` and `filename_period` modes:
+  #   "previous" -> last calendar month, "current" -> this month, or "YYYY-MM"
+  period: "previous"
+
+# ----------------------------------------------------------------------------
+# 3. EMAIL + ATTACHMENT LIMITS
+#   Gmail rejects messages whose *encoded* size exceeds 25 MB. Base64 inflates
+#   attachments ~37%, so the script keeps each zip well under that and splits
+#   into multiple zips / multiple emails automatically.
+#   Placeholders available in subject/body: {financier} {entity_list} {period}
+#   {from_name} {part_note}
+# ----------------------------------------------------------------------------
+email:
+  from_name: "StaffInc"
+  # Leave blank to send from the authenticated Gmail account:
+  from_address: ""
+  max_message_mb: 25
+  subject_template: "Bank Statements — {entity_list} — {period}"
+  body_template: |
+    Dear {financier},
+
+    Please find attached the latest bank statements for: {entity_list}.
+    Reporting period: {period}.
+    {part_note}
+    Kind regards,
+    {from_name}
+
+# ----------------------------------------------------------------------------
+# 4. FINANCIERS  — plug in a new one by adding a list item. That's it.
+#    `entities` must match the entity folder names in Drive (case-insensitive).
+#    Run `python run.py discover` to print the exact entity names available.
+# ----------------------------------------------------------------------------
+financiers:
+  - name: "Example Financier A"
+    email: "contact@financier-a.example"
+    entities: ["SMI", "NSG"]
+
+  - name: "Example Financier B"
+    email: "ops@financier-b.example"
+    entities: ["JMI", "KMI", "PBS"]

@@ -1,0 +1,18 @@
+# Virtual environment
+.venv/
+
+# Secrets & local config
+config.yaml
+.env
+client_secret*.json
+token.json
+
+# Working artifacts
+work/
+*.zip
+runs/
+__pycache__/
+*.pyc
+
+# Logs
+*.log
